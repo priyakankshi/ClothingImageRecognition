@@ -17,3 +17,8 @@ df2.1.pkl
 df3.1.pkl
 articles.csv
 recommendations_database.db
+web-app/__pycache__/app.cpython-38.pyc
+web-app/recommendations_database.sqlite3
+checkjoblib.ipynb
+Clothes_Inventory
+Clothes_Inventory.pkl

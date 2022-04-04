@@ -1,16 +1,20 @@
 from flask import Flask, render_template, request
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy.sql import text
 from sqlalchemy.ext.automap import automap_base
 from sqlalchemy.orm import Session
 from sqlalchemy import create_engine
 import sqlite3
 import os
 
+app = Flask(__name__)
+
 # specify directory where db is
 # currentdirectory = os.path.dirname(os.path.abspath(__file__))
-app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///recommendations_database.db'
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+# db_name = currentdirectory + "/ recommendations_database.db"
+db_name = 'recommendations_database.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + db_name
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
 db = SQLAlchemy(app)
 
 # Clothing = db.Table('strict_filtering', db.metadata, autoload=True, autoload_with = db.engine)
@@ -18,29 +22,40 @@ Base = automap_base()
 Base.prepare(db.engine, reflect=True)
 Clothing = Base.classes.strict_filtering #name of table
 
+# class Inventory(db.Model):
+#     id = db.Column(db.Integer, primary_key=True)
 
-@app.route("/")
+# For testing whether sql connection works
+# @app.route('/')
+# def testdb():
+#     try:
+#         db.session.query(text('1')).from_statement(text('SELECT 1')).all()
+#         return '<h1>It works.</h1>'
+#     except Exception as e:
+#         # e holds description of the error
+#         error_text = "<p>The error:<br>" + str(e) + "</p>"
+#         hed = '<h1>Something is broken.</h1>'
+#         return hed + error_text
+
+@app.route('/', methods=["GET", "POST"])
 def main():
-    new_product = Product(name="New Product")
-    # results = db.session.query(Clothing).all()
-    # for r in results:
-    #     print(r.article_id)
-    return ''
+    try:
+        result = db.session.query(Clothing).filter_by(graphical_appearance_name = 'chambray').all()
+        for r in result:
+            print(r.article_id)
+        return '<h1>It works.</h1>'
+    except Exception as e:
+        # e holds description of the error
+        error_text = "<p>The error:<br>" + str(e) + "</p>"
+        hed = '<h1>Something is broken.</h1>'
+        return hed + error_text
 
-# @app.route("/recommended", methods=["POST"])
-# def recommended():
-#     if request.method=="POST":
-#         gender=request.form.get("gender")
-#         product_appearance=request.form.get("product_appearance")
-#         Sample = 
-#         return(render_template("index.html"))
-
-if __name__ == "__main__":
-    app.run()
+if __name__ == '__main__':
+    app.run(debug=True)
     
     
     
-# connection = sqlite3.connect(currentdirectory + "\ recommendations_database.db")
+# connection = sqlite3.connect(currentdirectory + "/ recommendations_database.db")
 # cursor = connection.cursor() 
 # app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///recommendations_database.db'
 # db = SQLAlchemy(app)
